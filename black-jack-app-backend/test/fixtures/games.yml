@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  complete: false
+  bet_amount: 1
+  result: false
+
+two:
+  complete: false
+  bet_amount: 1
+  result: false
