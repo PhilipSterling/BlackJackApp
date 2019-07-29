@@ -5,6 +5,7 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
 Card.create(name: "Ace of Spades", value: "1,11", pic: "/assets/AS.png")
 Card.create(name: "Two of Spades", value: "2", pic: "/assets/2S.png")
 Card.create(name: "Three of Spades", value: "3", pic: "/assets/3S.png")
@@ -57,3 +58,6 @@ Card.create(name: "Ten of Clubs", value: "10", pic: "/assets/10C.png")
 Card.create(name: "Jack of Clubs", value: "10", pic: "/assets/JC.png")
 Card.create(name: "Queen of Clubs", value: "10", pic: "/assets/QC.png")
 Card.create(name: "King of Clubs", value: "10", pic: "/assets/KC.png")
+
+philip = User.create(name: "Philip",money: 500)
+
