@@ -1,31 +1,39 @@
 
 function listen() {
     let form = document.getElementById('login')
-    console.log(form)
     form.addEventListener("submit", function(ev) {
         ev.preventDefault()
-        if (checkForUser(form.uname.value)) {
-            fetchUser(form.uname.value)
-        } else {
-            newUser(form.uname.value)
-        }
-        }
-    )}
-
-function checkForUser(name) {
-    return fetch(`http://localhost:7777/users`)
-    .then(res => res.json())
-    .then(data => {
-        data.forEach(user => {
-        if (user.name === name) {
-            return true
-        }})
-    })}
+        checkForUser(form.uname.value)
+        .then(data => {
+            if(data) {
+                fetchUser(form.uname.value)
+            } else {
+                 newUser(form.uname.value)
+            }
+        })
+    })
+}
+    
+    function checkForUser(name) {
+        return fetch(`http://localhost:7777/users`)
+        .then(res => res.json())
+        .then(data => {
+            let x = false
+            data.forEach(user => {
+                if (user.name === name) {
+                    x = true
+                }         
+        })
+        return x
+    })
+    
+}
 
 function fetchUser(name) {
     return fetch(`http://localhost:7777/users`)
     .then(res => res.json())
     .then(data => data.forEach(user => {
+        console.log(user.name)
         if (user.name === name){
         renderHomePage(user)
       }
@@ -44,14 +52,13 @@ function newUser(name) {
            money: 500
         })
     }).then(res => res.json())
-    .then(data => console.log(data))    
+    .then(data => renderHomePage(data))    
 }
 
 
 function renderHomePage(object) {
     let login = document.querySelector('.container')
     login.hidden = true
-    
     userDisplay(object)
 }
 
@@ -83,7 +90,8 @@ function userDisplay(object) {
 
     play.addEventListener("submit", function(ev) {
         ev.preventDefault
-        placeholderFunction(bet)}
+        startGame()
+    })
 }
 
 function updateMoney(id, bet) {
@@ -391,5 +399,4 @@ function calculateValueTotal(hand){
     }
 }
 
-startGame()
 
