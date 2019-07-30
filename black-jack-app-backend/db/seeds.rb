@@ -5,7 +5,8 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-
+Card.destroy_all
+User.destroy_all
 Card.create(name: "Ace of Spades", value: "1,11", pic: "/assets/AS.png")
 Card.create(name: "Two of Spades", value: "2", pic: "/assets/2S.png")
 Card.create(name: "Three of Spades", value: "3", pic: "/assets/3S.png")
