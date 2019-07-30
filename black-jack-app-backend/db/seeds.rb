@@ -61,4 +61,7 @@ Card.create(name: "Queen of Clubs", value: "10", pic: "/assets/QC.png")
 Card.create(name: "King of Clubs", value: "10", pic: "/assets/KC.png")
 
 philip = User.create(name: "Philip",money: 500)
+michael = User.create(name: "Michael", money: 500)
+karen = User.create(name: "Karen", money: 500)
+claire = User.create(name: "Claire", money: 500)
 
