@@ -1,0 +1,28 @@
+body {
+    background: black;
+}
+img {
+    filter: grayscale(100%);
+    border-radius: 4px;
+    padding: 5px;
+    width: 150px;
+}
+div {
+    color: white;
+}
+
+#player {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+#dealer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+#split {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}

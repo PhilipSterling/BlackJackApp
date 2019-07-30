@@ -5,7 +5,8 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-
+Card.destroy_all
+User.destroy_all
 Card.create(name: "Ace of Spades", value: "1,11", pic: "/assets/AS.png")
 Card.create(name: "Two of Spades", value: "2", pic: "/assets/2S.png")
 Card.create(name: "Three of Spades", value: "3", pic: "/assets/3S.png")
@@ -26,12 +27,12 @@ Card.create(name: "Four of Diamonds", value: "4", pic: "/assets/4D.png")
 Card.create(name: "Five of Diamonds", value: "5", pic: "/assets/5D.png")
 Card.create(name: "Six of Diamonds", value: "6", pic: "/assets/6D.png")
 Card.create(name: "Seven of Diamonds", value: "7", pic: "/assets/7D.png")
-Card.create(name: "Eight of Diamonds", value: "8", pic: "/assets/8DS.png")
+Card.create(name: "Eight of Diamonds", value: "8", pic: "/assets/8D.png")
 Card.create(name: "Nine of Diamonds", value: "9", pic: "/assets/9D.png")
 Card.create(name: "Ten of Diamonds", value: "10", pic: "/assets/10D.png")
 Card.create(name: "Jack of Diamonds", value: "10", pic: "/assets/JD.png")
 Card.create(name: "Queen of Diamonds", value: "10", pic: "/assets/QD.png")
-Card.create(name: "King of Diamonds", value: "2", pic: "/assets/KD.png")
+Card.create(name: "King of Diamonds", value: "10", pic: "/assets/KD.png")
 Card.create(name: "Ace of Hearts", value: "1,11", pic: "/assets/AH.png")
 Card.create(name: "Two of Hearts", value: "2", pic: "/assets/2H.png")
 Card.create(name: "Three of Hearts", value: "3", pic: "/assets/3H.png")
