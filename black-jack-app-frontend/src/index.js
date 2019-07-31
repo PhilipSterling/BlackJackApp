@@ -68,7 +68,7 @@ function userDisplay(object) {
     let div = document.createElement('div')
     let user = document.createElement('h3')
     let money = document.createElement('h3')
-    let play = document.createElement('button')
+    let play = document.createElement('input')
     let form = document.createElement('form')
     let input = document.createElement('input')
     
@@ -81,17 +81,18 @@ function userDisplay(object) {
     user.innerText = "User: " + object.name
     money.innerText = "Bank: $" + object.money
     div.className = "userData"
+    play.type = "submit"
     
     anchor.appendChild(div)
     div.appendChild(user)
     div.appendChild(money)
     div.appendChild(form)
-    div.appendChild(play)
     form.appendChild(input)
+    form.appendChild(play)
 
-    play.addEventListener("submit", function(ev) {
-        ev.preventDefault
-        startGame()
+    form.addEventListener("submit", function(ev) {
+        ev.preventDefault()
+        startGame(ev.target.betAmount.value)
     })
 }
 
