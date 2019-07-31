@@ -26,7 +26,6 @@ function listen() {
         })
         return x
     })
-    
 }
 
 function fetchUser(name) {
@@ -58,12 +57,14 @@ function newUser(name) {
 
 function renderHomePage(object) {
     let login = document.querySelector('.container')
-    login.hidden = true
+    
+    login.remove()
+    
     userDisplay(object)
 }
 
 function userDisplay(object) {
-    let header = document.querySelector('header')
+    let anchor = document.getElementById('anchor')
     let div = document.createElement('div')
     let user = document.createElement('h3')
     let money = document.createElement('h3')
@@ -81,7 +82,7 @@ function userDisplay(object) {
     money.innerText = "Bank: $" + object.money
     div.className = "userData"
     
-    header.appendChild(div)
+    anchor.appendChild(div)
     div.appendChild(user)
     div.appendChild(money)
     div.appendChild(form)
