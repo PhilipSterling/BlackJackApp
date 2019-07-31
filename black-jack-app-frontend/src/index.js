@@ -183,7 +183,7 @@ function makeDeck(){
 }
 
 function startGame(){
-    const body = document.querySelector('body')
+    const body = document.querySelector('#buttonshelf')
     if(document.querySelector('#playAgainButton') != null){
         body.removeChild(document.querySelector('#playAgainButton'))
     }
@@ -195,14 +195,16 @@ function startGame(){
     }
     const dealerdiv = document.querySelector('#dealer')
     const playerdiv = document.querySelector('#player')
-    const dealerh1 = document.createElement('h1')
-    const playerh1 = document.createElement('h1')
+    const dealerh1 = document.createElement('h3')
+    const playerh1 = document.createElement('h3')
     playerh1.innerText = "PLAYERS HAND:"
     dealerh1.innerText = "DEALERS HAND:"
     dealerdiv.appendChild(dealerh1)
     playerdiv.appendChild(playerh1)
     let div = document.querySelector('.userData')
-    div.remove()
+    if(div != null){
+        div.remove()
+    }
     makeShoe()
     .then(cards => {
         let hands = initHands(cards)
@@ -214,7 +216,7 @@ function startGame(){
         }
         addButtonForHit(cards, hand, dealerHand)
         addButtonForStand(cards, hand, dealerHand)
-        addButtonForSplit(cards, hand, dealerHand)
+        // addButtonForSplit(cards, hand, dealerHand)
         if(calculateValueTotal(hand) > 8 && calculateValueTotal(hand) < 12){
             addButtonForDoubleDown(cards, hand, dealerHand)
         }
@@ -222,7 +224,7 @@ function startGame(){
 }
 
 function playAgain(hi = ""){
-    const body = document.querySelector('body')
+    const body = document.querySelector('#buttonshelf')
     if(document.getElementById('playAgainButton1') != null){
     } else {
         const NewGameButton = document.createElement('button')
@@ -245,7 +247,7 @@ function addButtonForDoubleDown(cards, hand, dealerHand){
     const doubleButton = document.createElement('button')
     doubleButton.innerText = "Double Down"
     doubleButton.id = "doubleButton"
-    const body = document.querySelector('body')
+    const body = document.querySelector('#buttonshelf')
     body.appendChild(doubleButton)
     doubleButton.addEventListener('click', function(){
         randomCard(cards, hand, false, false)
@@ -254,7 +256,7 @@ function addButtonForDoubleDown(cards, hand, dealerHand){
 }
 
 function caluclateResults(cards, hand, dealerHand, hi = ''){
-    const body = document.querySelector('body')
+    const body = document.getElementById('buttonshelf')
     const splitButton = document.getElementById('splitButton')
     const doubleButton = document.getElementById('doubleButton')
     const standButton = document.querySelector('#standButton')
@@ -288,7 +290,7 @@ function caluclateResults(cards, hand, dealerHand, hi = ''){
         body.removeChild(doubleButton)
     }
     const dealerdiv = document.querySelector('#dealer')
-    dealerdiv.firstElementChild.firstElementChild.src = "." + dealerHand[0].pic
+    dealerdiv.children[1].firstElementChild.src = "." + dealerHand[0].pic
     let playerTotal = calculateValueTotal(hand)
     while(calculateValueTotal(dealerHand) !== false && calculateValueTotal(dealerHand) < 17){
         randomCard(cards, dealerHand, true)
@@ -346,21 +348,22 @@ function addButtonForSplit(cards, hand, dealerHand){
     splitButton.id = "splitButton"
     //hand[0].name.split(' ')[0] === hand[1].name.split(' ')[0] && hand.length < 3
     if(hand[0].name.split(' ')[0] === hand[1].name.split(' ')[0] && hand.length < 3){
-        const body = document.querySelector('body')
-        body.appendChild(splitButton)
+        const button = document.getElementById('buttonshelf')
+        button.appendChild(splitButton)
         splitButton.addEventListener('click', function(){
-            body.removeChild(splitButton)
+            button.removeChild(splitButton)
             createSplitHands(cards, hand, dealerHand)
         })
     }
 }
 
 function createSplitHands(cards, hand, dealerHand){
-    let body = document.querySelector('body')
+    let body = document.querySelector('#buttonshelf')
     let splitdiv = document.getElementById("split")
     let hitButton = document.getElementById('hitButton')
     let standButton = document.getElementById('standButton')
-    splitdiv.innerText = 'PLAYERS SECOND CARDS:'
+    let second = document.createElement('h3')
+    second.innerText = 'PLAYERS SECOND CARDS:'
     let hand1 = hand[0]
     let hand2 = hand[1]
     unrenderPlayerCards()
@@ -382,8 +385,8 @@ function addButtonForStandSplit(cards, hand, dealerHand, hi){
     const standButton = document.createElement('button')
     standButton.innerText = "Stand"
     standButton.id = "standButton" + hi
-    const body = document.querySelector('body')
-    body.appendChild(standButton)
+    const button = document.getElementById('buttonshelf')
+    button.appendChild(standButton)
     standButton.addEventListener('click',function(e){
         hello(cards, hand, dealerHand)
         e.target.removeEventListener(e.type, arguments.callee);
@@ -418,11 +421,11 @@ function addButtonForHit(cards, hand, dealerHand, changeactive = false, hi = "")
     const hitButton = document.createElement('button')
     hitButton.id = "hitButton" + hi
     hitButton.innerText = "Hit"
-    const body = document.querySelector('body')
-    body.appendChild(hitButton)
+    const button = document.getElementById('buttonshelf')
+    button.appendChild(hitButton)
     hitButton.addEventListener('click',function(){
-        if(body.querySelector('#splitButton') != null){
-            body.removeChild(body.querySelector('#splitButton'))
+        if(document.querySelector('#splitButton') != null){
+            button.removeChild(button.querySelector('#splitButton'))
         }
         randomCard(cards, hand, false, changeactive)
         if(calculateValueTotal(hand) == false || calculateValueTotal(hand) == 21){
@@ -435,8 +438,8 @@ function addButtonForStand(cards, hand, dealerHand){
     const standButton = document.createElement('button')
     standButton.innerText = "Stand"
     standButton.id = "standButton"
-    const body = document.querySelector('body')
-    body.appendChild(standButton)
+    const button = document.getElementById('buttonshelf')
+    button.appendChild(standButton)
     standButton.addEventListener('click',function(){
         caluclateResults(cards, hand, dealerHand)
     })

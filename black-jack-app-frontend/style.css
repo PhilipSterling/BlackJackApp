@@ -18,11 +18,11 @@ div {
 
 #player {
     display: grid;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 30% 70%;
     grid-template-columns: repeat(4, 1fr);
 }
 
-#player h1 {
+#player h3 {
     grid-column: 1/5;
 }
 
@@ -32,7 +32,7 @@ div {
 
 #dealer {
     display: grid;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 30% 70%;
     grid-template-columns: repeat(4, 1fr);
 }
 
@@ -40,13 +40,17 @@ div {
     grid-row: 2;
 }
 
-#dealer h1 {
+#dealer h3 {
     grid-column: 1/5;
 }
 #split {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-rows: 30% 70%;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+#split div {
+    grid-row: 2;
 }
 
 header {
