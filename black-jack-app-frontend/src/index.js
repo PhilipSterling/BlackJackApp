@@ -195,8 +195,14 @@ function startGame(){
     }
     const dealerdiv = document.querySelector('#dealer')
     const playerdiv = document.querySelector('#player')
-    playerdiv.innerText = "PLAYERS HAND:"
-    dealerdiv.innerText = "DEALERS HAND:"
+    const dealerh1 = document.createElement('h1')
+    const playerh1 = document.createElement('h1')
+    playerh1.innerText = "PLAYERS HAND:"
+    dealerh1.innerText = "DEALERS HAND:"
+    dealerdiv.appendChild(dealerh1)
+    playerdiv.appendChild(playerh1)
+    let div = document.querySelector('.userData')
+    div.remove()
     makeShoe()
     .then(cards => {
         let hands = initHands(cards)
