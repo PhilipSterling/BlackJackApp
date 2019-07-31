@@ -1,7 +1,6 @@
 
 function listen() {
     let form = document.getElementById('login')
-    console.log(form)
     form.addEventListener("submit", function(ev) {
         ev.preventDefault()
         if (checkForUser(form.uname.value)) {
@@ -83,7 +82,8 @@ function userDisplay(object) {
 
     play.addEventListener("submit", function(ev) {
         ev.preventDefault
-        placeholderFunction(bet)}
+        placeholderFunction(bet)
+    })
 }
 
 function updateMoney(id, bet) {
@@ -143,7 +143,6 @@ function renderCard(card, dealer){
         if(dealerdiv.children.length === 0){
             const carddiv = document.createElement('div')
             const cardimg = document.createElement('img')
-            carddiv.id = "card_" + card.id
             cardimg.src = "." + "/assets/red_back.png"
             dealerdiv.appendChild(carddiv)
             carddiv.appendChild(cardimg)
@@ -174,18 +173,143 @@ function makeDeck(){
 }
 
 function startGame(){
+    const body = document.querySelector('body')
+    if(document.querySelector('#playAgainButton') != null){
+        body.removeChild(document.querySelector('#playAgainButton'))
+    }
+    if(document.querySelector('#playAgainButton1') != null){
+        body.removeChild(document.querySelector('#playAgainButton1'))
+    }
+    if(document.querySelector('#playAgainButton2') != null){
+        body.removeChild(document.querySelector('#playAgainButton2'))
+    }
+    const dealerdiv = document.querySelector('#dealer')
+    const playerdiv = document.querySelector('#player')
+    playerdiv.innerText = "PLAYERS HAND:"
+    dealerdiv.innerText = "DEALERS HAND:"
     makeShoe()
     .then(cards => {
         let hands = initHands(cards)
         let dealerHand = hands[0] 
         let hand = hands[1]
+        if(calculateValueTotal(dealerHand) === 21 || calculateValueTotal(hand) === 21){
+            caluclateResults(cards, hand, dealerHand)
+            return;
+        }
         addButtonForHit(cards, hand, dealerHand)
         addButtonForStand(cards, hand, dealerHand)
         addButtonForSplit(cards, hand, dealerHand)
+        if(calculateValueTotal(hand) > 8 && calculateValueTotal(hand) < 12){
+            addButtonForDoubleDown(cards, hand, dealerHand)
+        }
     })
+}
+
+function playAgain(hi = ""){
+    const body = document.querySelector('body')
+    if(document.getElementById('playAgainButton1') != null){
+    } else {
+        const NewGameButton = document.createElement('button')
+        NewGameButton.innerText = "Play Again"
+        NewGameButton.id = "playAgainButton" + hi
+        body.appendChild(NewGameButton)
+        NewGameButton.addEventListener('click',function(){
+            const dealerdiv = document.querySelector('#dealer')
+            const playerdiv = document.querySelector('#player')
+            const splitdiv = document.querySelector('#split')
+            dealerdiv.innerHTML = ""
+            playerdiv.innerHTML = ""
+            splitdiv.innerHTML = ""
+            startGame()
+        })
+    }
+}
+
+function addButtonForDoubleDown(cards, hand, dealerHand){
+    const doubleButton = document.createElement('button')
+    doubleButton.innerText = "Double Down"
+    doubleButton.id = "doubleButton"
+    const body = document.querySelector('body')
+    body.appendChild(doubleButton)
+    doubleButton.addEventListener('click', function(){
+        randomCard(cards, hand, false, false)
+        caluclateResults(cards, hand, dealerHand)
+    })
+}
+
+function caluclateResults(cards, hand, dealerHand, hi = ''){
+    const body = document.querySelector('body')
+    const splitButton = document.getElementById('splitButton')
+    const doubleButton = document.getElementById('doubleButton')
+    const standButton = document.querySelector('#standButton')
+    const hitButton = document.getElementById('hitButton')
+    const standButton1 = document.querySelector('#standButton1')
+    const standButton2 = document.querySelector('#standButton2')
+    const hitButton1 = document.querySelector('#hitButton1')
+    const hitButton2 = document.querySelector('#hitButton2')
+    if(hitButton != null){
+        body.removeChild(hitButton)
+    }
+    if(standButton1 != null){
+        body.removeChild(standButton1)
+    }
+    if(standButton2 != null){
+        body.removeChild(standButton2)
+    }
+    if(hitButton1 != null){
+        body.removeChild(hitButton1)
+    }
+    if(hitButton2 != null){
+        body.removeChild(hitButton2)
+    }
+    if(splitButton != null){
+        body.removeChild(splitButton)
+    }
+    if(standButton != null){
+        body.removeChild(standButton)
+    }
+    if(doubleButton != null){
+        body.removeChild(doubleButton)
+    }
+    const dealerdiv = document.querySelector('#dealer')
+    dealerdiv.firstElementChild.firstElementChild.src = "." + dealerHand[0].pic
+    let playerTotal = calculateValueTotal(hand)
+    while(calculateValueTotal(dealerHand) !== false && calculateValueTotal(dealerHand) < 17){
+        randomCard(cards, dealerHand, true)
+    }
+    let dealerTotal = calculateValueTotal(dealerHand)
+    if(playerTotal !== false){
+        if(dealerTotal === false || playerTotal > dealerTotal){
+            console.log(playerTotal)
+            console.log(dealerTotal)
+            console.log("WIN")
+        } else if(dealerTotal == 21 && dealerTotal == playerTotal && dealerHand.length == 2 && hand.length > 2){
+            console.log(playerTotal)
+            console.log(dealerTotal)
+            console.log("Lose : (")
+        } else if(dealerTotal == playerTotal && hand.length == 2 && dealerHand.length > 2){
+            console.log(playerTotal)
+            console.log(dealerTotal)
+            console.log("WIN")
+        } else if (dealerTotal == playerTotal){
+            console.log(playerTotal)
+            console.log(dealerTotal)
+            console.log("Push")
+        } else {
+            console.log(playerTotal)
+            console.log(dealerTotal)
+            console.log("Lose : (")
+        }
+    } else {
+        console.log(playerTotal)
+        console.log(dealerTotal)
+        console.log("Lose : (")
+    }
+    playAgain(hi)
 }
     
 hello.counter = 0
+hello.hands = []
     
 function initHands(cards){
     let rarr = []
@@ -231,17 +355,17 @@ function createSplitHands(cards, hand, dealerHand){
     body.removeChild(hitButton)
     body.removeChild(standButton)
     let newhand = [hand1]
-    addButtonForHit(cards, newhand, dealerHand)
-    addButtonForStandSplit(cards, newhand, dealerHand)
+    addButtonForHit(cards, newhand, dealerHand, false, "1")
+    addButtonForStandSplit(cards, newhand, dealerHand, "1")
     let secondnewhand = [hand2]
-    addButtonForHit(cards, secondnewhand, dealerHand, true)
-    addButtonForStandSplit(cards, secondnewhand, dealerHand)
+    addButtonForHit(cards, secondnewhand, dealerHand, true, "2")
+    addButtonForStandSplit(cards, secondnewhand, dealerHand , "2")
 }
 
-function addButtonForStandSplit(cards, hand, dealerHand){
+function addButtonForStandSplit(cards, hand, dealerHand, hi){
     const standButton = document.createElement('button')
     standButton.innerText = "Stand"
-    standButton.id = "standButton"
+    standButton.id = "standButton" + hi
     const body = document.querySelector('body')
     body.appendChild(standButton)
     standButton.addEventListener('click',function(e){
@@ -252,33 +376,12 @@ function addButtonForStandSplit(cards, hand, dealerHand){
 
 function hello(cards, hand, dealerHand){
     hello.counter += 1
+    hello.hands.push(hand)
     if(hello.counter >= 2){
-        reveal(cards, hand, dealerHand)
-    }
-}
-
-function reveal(cards, hand, dealerHand){
-    const dealerdiv = document.querySelector('#dealer')
-    dealerdiv.firstElementChild.firstElementChild.src = "." + dealerHand[0].pic
-    let playerTotal = calculateValueTotal(hand)
-    while(calculateValueTotal(dealerHand) !== false && calculateValueTotal(dealerHand) < 17){
-        randomCard(cards, dealerHand, true)
-    }
-    let dealerTotal = calculateValueTotal(dealerHand)
-    if(playerTotal !== false){
-        if(dealerTotal === false || playerTotal > dealerTotal){
-            console.log(playerTotal)
-            console.log(dealerTotal)
-            console.log("WIN")
-        } else {
-            console.log(playerTotal)
-            console.log(dealerTotal)
-            console.log("Lose : (")
-        }
-    } else {
-        console.log(playerTotal)
-        console.log(dealerTotal)
-        console.log("Lose : (")
+        for (let i = 0; i < hello.hands.length; i++) {
+            const newhand = hello.hands[i];
+            caluclateResults(cards, newhand, dealerHand, i+1)
+        }      
     }
 }
 
@@ -295,20 +398,19 @@ function unrenderPlayerCards(){
     playerdiv.firstElementChild.remove()
 }
 
-function addButtonForHit(cards, hand, dealerHand, changeactive = false){
+function addButtonForHit(cards, hand, dealerHand, changeactive = false, hi = ""){
     const hitButton = document.createElement('button')
-    hitButton.id = "hitButton"
+    hitButton.id = "hitButton" + hi
     hitButton.innerText = "Hit"
     const body = document.querySelector('body')
     body.appendChild(hitButton)
     hitButton.addEventListener('click',function(){
-        debugger;
         if(body.querySelector('#splitButton') != null){
             body.removeChild(body.querySelector('#splitButton'))
         }
-        if((calculateValueTotal(hand) !== false && calculateValueTotal(hand) < 21)){
-            //body.removeChild(hitButton)
-            randomCard(cards, hand, false, changeactive)
+        randomCard(cards, hand, false, changeactive)
+        if(calculateValueTotal(hand) == false || calculateValueTotal(hand) == 21){
+            caluclateResults(cards, hand, dealerHand)
         }
     })
 }
@@ -320,28 +422,7 @@ function addButtonForStand(cards, hand, dealerHand){
     const body = document.querySelector('body')
     body.appendChild(standButton)
     standButton.addEventListener('click',function(){
-        const dealerdiv = document.querySelector('#dealer')
-        dealerdiv.firstElementChild.firstElementChild.src = "." + dealerHand[0].pic
-        let playerTotal = calculateValueTotal(hand)
-        while(calculateValueTotal(dealerHand) !== false && calculateValueTotal(dealerHand) < 17){
-            randomCard(cards, dealerHand, true)
-        }
-        let dealerTotal = calculateValueTotal(dealerHand)
-        if(playerTotal !== false){
-            if(dealerTotal === false || playerTotal > dealerTotal){
-                console.log(playerTotal)
-                console.log(dealerTotal)
-                console.log("WIN")
-            } else {
-                console.log(playerTotal)
-                console.log(dealerTotal)
-                console.log("Lose : (")
-            }
-        } else {
-            console.log(playerTotal)
-            console.log(dealerTotal)
-            console.log("Lose : (")
-        }
+        caluclateResults(cards, hand, dealerHand)
     })
 }
 
@@ -392,4 +473,3 @@ function calculateValueTotal(hand){
 }
 
 startGame()
-
