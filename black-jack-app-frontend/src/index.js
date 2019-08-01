@@ -68,9 +68,9 @@ function newUser(name) {
 
 function renderHomePage(object) {
     let login = document.querySelector('.container')
-    
+    if (login != null){
     login.remove()
-    
+    }
     userDisplay(object)
 }
 
@@ -82,17 +82,24 @@ function userDisplay(object) {
     let play = document.createElement('input')
     let form = document.createElement('form')
     let input = document.createElement('input')
+    let reqMoney = document.createElement('button')
     
-    
+    reqMoney.innerText = "Request 100$"
     input.placeholder = "Bet Amount"
     input.id = "betAmount"
     user.className = "user"
     money.className = "money"
     play.innerText = "Play"
     user.innerText = "User: " + object.name
-    money.innerText = "Bank: $" + object.money
+    if(object.money != null){
+        money.innerText = "Bank: $" + object.money
+    } else {
+        money.innerText = "Bank: $0"
+    }
     div.className = "userData"
     play.type = "submit"
+    input.type = "number"
+    input.min = "0"
     
     anchor.appendChild(div)
     div.appendChild(user)
@@ -100,15 +107,28 @@ function userDisplay(object) {
     div.appendChild(form)
     form.appendChild(input)
     form.appendChild(play)
+    money.appendChild(reqMoney)
 
     form.addEventListener("submit", function(ev) {
         ev.preventDefault()
         startGame(ev.target.betAmount.value, object)
     })
+    reqMoney.addEventListener('click', function(){
+        requestMoney(object)
+        .then(
+            updateduser => {
+         object.money = updateduser.money;
+         money.innerText = "Bank: $" + object.money
+         money.appendChild(reqMoney)
+       })
+    })
 }
 
 function updateMoney(user, bet) {
     let newMoney = parseInt(user.money) + parseInt(bet)
+    if(user.money == null){
+        newMoney = 0
+    }
     fetch(`http://localhost:7777/users/${user.id}`, {
         method: 'PATCH',
         headers: {
@@ -117,8 +137,28 @@ function updateMoney(user, bet) {
         body: JSON.stringify({
             money: newMoney
         })
-    }).then(res => res.json())
+    })
+    .then(res => res.json())
     .then(updateduser => user.money = updateduser.money)
+}
+
+function requestMoney(user){
+    let mr = user.moneyRequested++
+    let nm = user.money + 100
+    if(user.money == null){
+        newMoney = 100
+    }
+    console.log(nm)
+    return fetch(`http://localhost:7777/users/${user.id}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type':'application/json'
+        },
+        body: JSON.stringify({
+            money: nm
+        })
+    })
+    .then(res => res.json())
 }
 
 listen()
@@ -163,7 +203,7 @@ function renderCard(card, dealer){
         playerdiv.appendChild(carddiv)
         carddiv.appendChild(cardimg)
     } else if (dealer === true) {
-        if(dealerdiv.children.length === 0){
+        if(dealerdiv.children.length === 1){
             const carddiv = document.createElement('div')
             const cardimg = document.createElement('img')
             cardimg.src = "." + "/assets/red_back.png"
@@ -198,20 +238,18 @@ function makeDeck(){
 function startGame(bet, user){
     storeBet(bet)
     storeUser(user)
+    if(bet > user.money){
+        //temp logic for bad bet
+        renderHomePage(user)
+    } else{
     runGame()
+    }
 }
 
 function runGame(){
+    updateMoney(storedUser.val, -storedBet.val)
     const body = document.querySelector('#buttonshelf')
-    if(document.querySelector('#playAgainButton') != null){
-        body.removeChild(document.querySelector('#playAgainButton'))
-    }
-    if(document.querySelector('#playAgainButton1') != null){
-        body.removeChild(document.querySelector('#playAgainButton1'))
-    }
-    if(document.querySelector('#playAgainButton2') != null){
-        body.removeChild(document.querySelector('#playAgainButton2'))
-    }
+    body.innerHTML = ""
     const dealerdiv = document.querySelector('#dealer')
     const playerdiv = document.querySelector('#player')
     const dealerh1 = document.createElement('h3')
@@ -235,20 +273,20 @@ function runGame(){
         }
         addButtonForHit(cards, hand, dealerHand)
         addButtonForStand(cards, hand, dealerHand)
-        // addButtonForSplit(cards, hand, dealerHand)
+        addButtonForSplit(cards, hand, dealerHand)
         if(calculateValueTotal(hand) > 8 && calculateValueTotal(hand) < 12){
             addButtonForDoubleDown(cards, hand, dealerHand)
         }
     })
 }
 
-function playAgain(hi = ""){
+function playAgain(){
     const body = document.querySelector('#buttonshelf')
-    if(document.getElementById('playAgainButton1') != null){
+    if(document.getElementById('playAgainButton') != null){
     } else {
         const NewGameButton = document.createElement('button')
         NewGameButton.innerText = "Play Again"
-        NewGameButton.id = "playAgainButton" + hi
+        NewGameButton.id = "playAgainButton"
         body.appendChild(NewGameButton)
         NewGameButton.addEventListener('click',function(){
             const dealerdiv = document.querySelector('#dealer')
@@ -260,6 +298,23 @@ function playAgain(hi = ""){
             startGame(storedBet.val, storedUser.val)
         })
     }
+    if(document.getElementById('returnToHomePage') != null){
+    } else {
+        const returnButton = document.createElement('button')
+        returnButton.innerText = "Return to Home Page"
+        returnButton.id = "playAgainButton"
+        body.appendChild(returnButton)
+        returnButton.addEventListener('click',function(){
+            const dealerdiv = document.querySelector('#dealer')
+            const playerdiv = document.querySelector('#player')
+            const splitdiv = document.querySelector('#split')
+            dealerdiv.innerHTML = ""
+            playerdiv.innerHTML = ""
+            splitdiv.innerHTML = ""
+            body.innerHTML = ""
+            renderHomePage(storedUser.val)
+        })
+    }
 }
 
 function addButtonForDoubleDown(cards, hand, dealerHand){
@@ -269,7 +324,6 @@ function addButtonForDoubleDown(cards, hand, dealerHand){
     const body = document.querySelector('#buttonshelf')
     body.appendChild(doubleButton)
     doubleButton.addEventListener('click', function(){
-        debugger;
         storedBet.val = storedBet.val * 2
         randomCard(cards, hand, false, false)
         caluclateResults(cards, hand, dealerHand)
@@ -277,40 +331,9 @@ function addButtonForDoubleDown(cards, hand, dealerHand){
     })
 }
 
-function caluclateResults(cards, hand, dealerHand, hi = ''){
+function caluclateResults(cards, hand, dealerHand){
     const body = document.getElementById('buttonshelf')
-    const splitButton = document.getElementById('splitButton')
-    const doubleButton = document.getElementById('doubleButton')
-    const standButton = document.querySelector('#standButton')
-    const hitButton = document.getElementById('hitButton')
-    const standButton1 = document.querySelector('#standButton1')
-    const standButton2 = document.querySelector('#standButton2')
-    const hitButton1 = document.querySelector('#hitButton1')
-    const hitButton2 = document.querySelector('#hitButton2')
-    if(hitButton != null){
-        body.removeChild(hitButton)
-    }
-    if(standButton1 != null){
-        body.removeChild(standButton1)
-    }
-    if(standButton2 != null){
-        body.removeChild(standButton2)
-    }
-    if(hitButton1 != null){
-        body.removeChild(hitButton1)
-    }
-    if(hitButton2 != null){
-        body.removeChild(hitButton2)
-    }
-    if(splitButton != null){
-        body.removeChild(splitButton)
-    }
-    if(standButton != null){
-        body.removeChild(standButton)
-    }
-    if(doubleButton != null){
-        body.removeChild(doubleButton)
-    }
+    body.innerHTML = ""
     const dealerdiv = document.querySelector('#dealer')
     dealerdiv.children[1].firstElementChild.src = "." + dealerHand[0].pic
     let playerTotal = calculateValueTotal(hand)
@@ -324,7 +347,7 @@ function caluclateResults(cards, hand, dealerHand, hi = ''){
             console.log(playerTotal)
             console.log(dealerTotal)
             console.log("WIN")
-            updateMoney(storedUser.val, storedBet.val)
+            updateMoney(storedUser.val, storedBet.val * 2)
         } else if(dealerTotal == 21 && dealerTotal == playerTotal && dealerHand.length == 2 && hand.length > 2){
             console.log(storedBet.val)
             console.log(playerTotal)
@@ -335,11 +358,13 @@ function caluclateResults(cards, hand, dealerHand, hi = ''){
             console.log(playerTotal)
             console.log(dealerTotal)
             console.log("WIN")
+            updateMoney(storedUser.val, storedBet.val * 2)
         } else if (dealerTotal == playerTotal){
             console.log(storedBet.val)
             console.log(playerTotal)
             console.log(dealerTotal)
             console.log("Push")
+            updateMoney(storedUser.val, storedBet.val)
         } else {
             console.log(storedBet.val)
             console.log(playerTotal)
@@ -352,7 +377,7 @@ function caluclateResults(cards, hand, dealerHand, hi = ''){
         console.log(dealerTotal)
         console.log("Lose : (")
     }
-    playAgain(hi)
+    playAgain()
 }
     
 hello.counter = 0
@@ -380,6 +405,9 @@ function addButtonForSplit(cards, hand, dealerHand){
         const button = document.getElementById('buttonshelf')
         button.appendChild(splitButton)
         splitButton.addEventListener('click', function(){
+            if(document.querySelector('#doubleButton') != null){
+                button.removeChild(button.querySelector('#doubleButton'))
+            }
             button.removeChild(splitButton)
             createSplitHands(cards, hand, dealerHand)
         })
@@ -391,8 +419,11 @@ function createSplitHands(cards, hand, dealerHand){
     let splitdiv = document.getElementById("split")
     let hitButton = document.getElementById('hitButton')
     let standButton = document.getElementById('standButton')
+    let playerdiv = document.getElementById('player')
+    playerdiv.firstElementChild.innerText = "HAND 1:"
     let second = document.createElement('h3')
-    second.innerText = 'PLAYERS SECOND CARDS:'
+    second.innerText = 'HAND 2:'
+    splitdiv.appendChild(second)
     let hand1 = hand[0]
     let hand2 = hand[1]
     unrenderPlayerCards()
@@ -407,16 +438,19 @@ function createSplitHands(cards, hand, dealerHand){
     addButtonForStandSplit(cards, newhand, dealerHand, "1")
     let secondnewhand = [hand2]
     addButtonForHit(cards, secondnewhand, dealerHand, true, "2")
-    addButtonForStandSplit(cards, secondnewhand, dealerHand , "2")
+    addButtonForStandSplit(cards, secondnewhand, dealerHand, "2")
 }
 
-function addButtonForStandSplit(cards, hand, dealerHand, hi){
+function addButtonForStandSplit(cards, hand, dealerHand, use){
     const standButton = document.createElement('button')
-    standButton.innerText = "Stand"
-    standButton.id = "standButton" + hi
+    const hitButton = document.getElementById('hitButton' + use)
+    standButton.innerText = "Stand for Hand " + use
+    standButton.id = "standButton"
     const button = document.getElementById('buttonshelf')
     button.appendChild(standButton)
     standButton.addEventListener('click',function(e){
+        standButton.remove()
+        hitButton.remove()
         hello(cards, hand, dealerHand)
         e.target.removeEventListener(e.type, arguments.callee);
     })
@@ -428,7 +462,7 @@ function hello(cards, hand, dealerHand){
     if(hello.counter >= 2){
         for (let i = 0; i < hello.hands.length; i++) {
             const newhand = hello.hands[i];
-            caluclateResults(cards, newhand, dealerHand, i+1)
+            caluclateResults(cards, newhand, dealerHand)
         }      
     }
 }
@@ -442,8 +476,8 @@ function changeActive(){
 
 function unrenderPlayerCards(){
     let playerdiv = document.getElementById('player')
-    playerdiv.firstElementChild.remove()
-    playerdiv.firstElementChild.remove()
+    playerdiv.firstElementChild.nextSibling.remove()
+    playerdiv.firstElementChild.nextSibling.remove()
 }
 
 function addButtonForHit(cards, hand, dealerHand, changeactive = false, hi = ""){
@@ -455,6 +489,9 @@ function addButtonForHit(cards, hand, dealerHand, changeactive = false, hi = "")
     hitButton.addEventListener('click',function(){
         if(document.querySelector('#splitButton') != null){
             button.removeChild(button.querySelector('#splitButton'))
+        }
+        if(document.querySelector('#doubleButton') != null){
+            button.removeChild(button.querySelector('#doubleButton'))
         }
         randomCard(cards, hand, false, changeactive)
         if(calculateValueTotal(hand) == false || calculateValueTotal(hand) == 21){
