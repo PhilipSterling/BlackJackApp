@@ -290,7 +290,7 @@ function runGame(){
 }
 
 function playAgain(){
-    let betAmount = document.getElementById('headerId')
+    let betAmount = document.getElementById('headerBet')
     betAmount.remove()
 
     const body = document.querySelector('#buttonshelf')
