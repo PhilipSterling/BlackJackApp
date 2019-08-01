@@ -1,3 +1,15 @@
+class Thing{
+    constructor(val){
+        this.val = val
+    }
+}
+
+function storeBet(value){
+    storedBet = new Thing(value)
+}
+function storeUser(user){
+    storedUser = new Thing(user)
+}
 
 function listen() {
     let form = document.getElementById('login')
@@ -14,7 +26,7 @@ function listen() {
     })
 }
     
-    function checkForUser(name) {
+function checkForUser(name) {
         return fetch(`http://localhost:7777/users`)
         .then(res => res.json())
         .then(data => {
@@ -54,7 +66,6 @@ function newUser(name) {
     .then(data => renderHomePage(data))    
 }
 
-
 function renderHomePage(object) {
     let login = document.querySelector('.container')
     
@@ -92,20 +103,22 @@ function userDisplay(object) {
 
     form.addEventListener("submit", function(ev) {
         ev.preventDefault()
-        startGame(ev.target.betAmount.value)
+        startGame(ev.target.betAmount.value, object)
     })
 }
 
-function updateMoney(id, bet) {
-    return fetch(`http://localhost:7777/users/${id}`, {
+function updateMoney(user, bet) {
+    let newMoney = parseInt(user.money) + parseInt(bet)
+    fetch(`http://localhost:7777/users/${user.id}`, {
         method: 'PATCH',
         headers: {
             'Content-Type':'application/json'
         },
-        body: JSON.stringify ({
-            money: money + bet
+        body: JSON.stringify({
+            money: newMoney
         })
     }).then(res => res.json())
+    .then(updateduser => user.money = updateduser.money)
 }
 
 listen()
@@ -182,7 +195,13 @@ function makeDeck(){
     })
 }
 
-function startGame(){
+function startGame(bet, user){
+    storeBet(bet)
+    storeUser(user)
+    runGame()
+}
+
+function runGame(){
     const body = document.querySelector('#buttonshelf')
     if(document.querySelector('#playAgainButton') != null){
         body.removeChild(document.querySelector('#playAgainButton'))
@@ -238,7 +257,7 @@ function playAgain(hi = ""){
             dealerdiv.innerHTML = ""
             playerdiv.innerHTML = ""
             splitdiv.innerHTML = ""
-            startGame()
+            startGame(storedBet.val, storedUser.val)
         })
     }
 }
@@ -250,8 +269,11 @@ function addButtonForDoubleDown(cards, hand, dealerHand){
     const body = document.querySelector('#buttonshelf')
     body.appendChild(doubleButton)
     doubleButton.addEventListener('click', function(){
+        debugger;
+        storedBet.val = storedBet.val * 2
         randomCard(cards, hand, false, false)
         caluclateResults(cards, hand, dealerHand)
+        storedBet.val = storedBet.val / 2
     })
 }
 
@@ -298,27 +320,34 @@ function caluclateResults(cards, hand, dealerHand, hi = ''){
     let dealerTotal = calculateValueTotal(dealerHand)
     if(playerTotal !== false){
         if(dealerTotal === false || playerTotal > dealerTotal){
+            console.log(storedBet.val)
             console.log(playerTotal)
             console.log(dealerTotal)
             console.log("WIN")
+            updateMoney(storedUser.val, storedBet.val)
         } else if(dealerTotal == 21 && dealerTotal == playerTotal && dealerHand.length == 2 && hand.length > 2){
+            console.log(storedBet.val)
             console.log(playerTotal)
             console.log(dealerTotal)
             console.log("Lose : (")
-        } else if(dealerTotal == playerTotal && hand.length == 2 && dealerHand.length > 2){
+        } else if(dealerTotal == 21 && dealerTotal == playerTotal && hand.length == 2 && dealerHand.length > 2){
+            console.log(storedBet.val)
             console.log(playerTotal)
             console.log(dealerTotal)
             console.log("WIN")
         } else if (dealerTotal == playerTotal){
+            console.log(storedBet.val)
             console.log(playerTotal)
             console.log(dealerTotal)
             console.log("Push")
         } else {
+            console.log(storedBet.val)
             console.log(playerTotal)
             console.log(dealerTotal)
             console.log("Lose : (")
         }
     } else {
+        console.log(storedBet.val)
         console.log(playerTotal)
         console.log(dealerTotal)
         console.log("Lose : (")
