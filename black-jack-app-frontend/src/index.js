@@ -278,9 +278,18 @@ function runGame(){
             addButtonForDoubleDown(cards, hand, dealerHand)
         }
     })
+    
+    let headerDiv = document.getElementById('headerdiv')
+    let betAmount = document.createElement('p')
+    betAmount.innerText = "Current Bet: $"+ storedBet.val
+    betAmount.id = "headerBet"
+    headerDiv.appendChild(betAmount)
 }
 
 function playAgain(){
+    let betAmount = document.getElementById('headerId')
+    betAmount.remove()
+
     const body = document.querySelector('#buttonshelf')
     if(document.getElementById('playAgainButton') != null){
     } else {

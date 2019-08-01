@@ -63,6 +63,38 @@ header {
 
 }
 
+#headerdiv {
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: repeat(200, 1fr);
+    position: relative
+}
+
+#p21 {
+    grid-column: 13/24;
+    grid-row: 1;
+    color: black;
+    position: absolute;
+    z-index: 2
+}
+
+#chip {
+    padding: 18px;
+    position: absolute;
+    z-index: 1;
+}
+
+#pNoir {
+    grid-column: 37;
+    grid-row: 1;
+}
+
+#headerBet {
+    grid-column: 90/200;
+    font-size: 65%;
+    padding: 38px
+}
+
 .wrapper { 
     background: black;
     display: grid;
