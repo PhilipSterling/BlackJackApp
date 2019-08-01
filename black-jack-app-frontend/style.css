@@ -61,7 +61,21 @@ header {
     font-family: 'Poller One';
     font-size: 350%;
 
+    grid-template-rows: 1fr;
+    grid-template-columns: repeat(12, 1fr);
 }
+
+header p {
+ grid-column: 1/5;
+
+}
+
+header img {
+    grid-column: 11;
+    width: 100px;
+    padding: 30px
+}
+
 
 .wrapper { 
     background: black;

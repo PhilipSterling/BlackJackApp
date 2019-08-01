@@ -163,7 +163,7 @@ function renderCard(card, dealer){
         playerdiv.appendChild(carddiv)
         carddiv.appendChild(cardimg)
     } else if (dealer === true) {
-        if(dealerdiv.children.length === 0){
+        if(dealerdiv.children.length === 1){
             const carddiv = document.createElement('div')
             const cardimg = document.createElement('img')
             cardimg.src = "." + "/assets/red_back.png"
@@ -178,6 +178,11 @@ function renderCard(card, dealer){
         carddiv.appendChild(cardimg)
         }
     }
+}
+
+function renderSplitCards(card, dealer) {
+    const dealerdiv = document.querySelector('#dealer')
+    const playerdiv = document.querySelector('#player')
 }
 
 function addToHand(card, hand){
