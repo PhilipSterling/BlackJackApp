@@ -241,6 +241,7 @@ function startGame(bet, user){
     if(bet > user.money){
         //temp logic for bad bet
         renderHomePage(user)
+
     } else{
     runGame()
     }
@@ -275,7 +276,9 @@ function runGame(){
         addButtonForStand(cards, hand, dealerHand)
         addButtonForSplit(cards, hand, dealerHand)
         if(calculateValueTotal(hand) > 8 && calculateValueTotal(hand) < 12){
+            if(!(storedBet.val * 2 > storedUser.val.money)){
             addButtonForDoubleDown(cards, hand, dealerHand)
+            }
         }
     })
     
@@ -304,6 +307,7 @@ function playAgain(){
             dealerdiv.innerHTML = ""
             playerdiv.innerHTML = ""
             splitdiv.innerHTML = ""
+            body.innerHTML = ""
             startGame(storedBet.val, storedUser.val)
         })
     }
@@ -411,15 +415,18 @@ function addButtonForSplit(cards, hand, dealerHand){
     splitButton.id = "splitButton"
     //hand[0].name.split(' ')[0] === hand[1].name.split(' ')[0] && hand.length < 3
     if(hand[0].name.split(' ')[0] === hand[1].name.split(' ')[0] && hand.length < 3){
-        const button = document.getElementById('buttonshelf')
-        button.appendChild(splitButton)
-        splitButton.addEventListener('click', function(){
-            if(document.querySelector('#doubleButton') != null){
-                button.removeChild(button.querySelector('#doubleButton'))
-            }
-            button.removeChild(splitButton)
-            createSplitHands(cards, hand, dealerHand)
-        })
+        if(!(storedBet.val * 2 > storedUser.val.money)){
+            const button = document.getElementById('buttonshelf')
+            button.appendChild(splitButton)
+            splitButton.addEventListener('click', function(){
+                updateMoney(storedUser.val, -storedBet.val)
+                if(document.querySelector('#doubleButton') != null){
+                    button.removeChild(button.querySelector('#doubleButton'))
+                }
+                button.removeChild(splitButton)
+                createSplitHands(cards, hand, dealerHand)
+            })
+        }
     }
 }
 
@@ -565,4 +572,3 @@ function calculateValueTotal(hand){
         return false
     }
 }
-
