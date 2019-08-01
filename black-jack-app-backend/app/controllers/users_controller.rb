@@ -28,9 +28,8 @@ class UsersController < ApplicationController
         @user = User.find(params[:id])
     end
     
-    # def update
-    #     raise.params.inspect
-    #     @user = User.find(params[:id])
-    #     @user.update(money: (money: + params[:money]))
-    # end
+    def update
+        @user = User.find(params[:id])
+        @user.update(money: params[:money])
+    end
 end
